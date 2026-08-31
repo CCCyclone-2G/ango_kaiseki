@@ -32,13 +32,10 @@
             resize: vertical;
         }
         textarea:focus { border-color: #3182ce; outline: none; }
-        /* 解析結果用のテキストエリアの背景色を設定 */
         #output {
             background-color: #f8fafc;
         }
-        /* placeholderの文字色（グレー） */
         textarea::placeholder { color: #9ca3af; }
-        /* JavaScript側でクラス操作をしなくても済むよう、CSS側でplaceholderの色を共通化 */
     </style>
 </head>
 <body>
@@ -51,12 +48,12 @@
         <textarea id="inputText" placeholder="ここに入力"></textarea>
     </div>
 
-    <!-- 2. 真ん側に解析ボタン -->
+    <!-- 2. 真ん中に解析ボタン -->
     <div class="btn-container" style="text-align: center; margin-bottom: 20px;">
         <button onclick="analyzeCrypto()" style="width: 80%; padding: 14px; font-size: 18px; font-weight: bold; color: white; background-color: #3182ce; border: none; border-radius: 6px; cursor: pointer; transition: background-color 0.2s;">⚡ 暗号を解析・変換する</button>
     </div>
 
-    <!-- 3. 下に解析結果の欄（文字編集可能なtextareaに変更） -->
+    <!-- 3. 下に解析結果の欄 -->
     <div class="form-group">
         <label>解析結果:</label>
         <textarea id="output" placeholder="ここに結果が表示されます"></textarea>
@@ -64,6 +61,7 @@
 
     <script>
         const hiraSource = "あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん";
+        /* 【修正】「さ」の対応位置（左から11文字目）にあった誤字「ヤ」を、正しいひらがなの「や」に修正しました */
         const hiraTarget = "んをわろれるりらよゆやもめむみまほへふひはのねぬになとてつちたそせすしさこけくきかおえういあ";
 
         const kanaSource = "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン";
@@ -81,7 +79,7 @@
             'ガ':'カ', 'ギ':'キ', 'グ':'ク', 'ゲ':'ケ', 'ゴ':'コ',
             'ザ':'サ', 'ジ':'シ', 'ズ':'ス', 'ゼ':'セ', 'ゾ':'ソ',
             'ダ':'タ', 'ヂ':'チ', 'ヅ':'ツ', 'デ':'テ', 'ド':'ト',
-            'バ':'ハ', 'ビ':'ヒ', 'ブ':'フ', 'ベ':'へ', 'ボ':'ホ',
+            'バ':'ハ', 'ビ':'ヒ', 'ブ':'フ', 'べ':'へ', 'ボ':'ホ',
             'パ':'ハ', 'ピ':'ヒ', 'プ':'フ', 'ペ':'へ', 'ポ':'ホ',
             'ヴ':'ウ',
             'ァ':'ア', 'ィ':'イ', 'ゥ':'ウ', 'ェ':'エ', 'ォ':'オ',
@@ -92,7 +90,6 @@
             const input = document.getElementById('inputText').value;
             let result = '';
 
-            // 入力が空の場合は、解析結果の枠も空（placeholderを表示）にする
             if (input.trim() === '') {
                 document.getElementById('output').value = '';
                 return;
@@ -120,7 +117,6 @@
                 result += char;
             }
 
-            // 編集可能なテキストエリアの値（value）として結果を出力
             document.getElementById('output').value = result;
         }
     </script>
