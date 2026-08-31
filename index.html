@@ -21,7 +21,7 @@
         h1 { text-align: center; color: #2c3e50; font-size: 22px; margin-bottom: 20px; }
         .form-group { margin-bottom: 20px; }
         label { display: block; margin-bottom: 8px; font-weight: bold; color: #4a5568; }
-        textarea, .output-box {
+        textarea {
             width: 100%;
             height: 120px;
             padding: 12px;
@@ -29,34 +29,16 @@
             border-radius: 6px;
             box-sizing: border-box;
             font-size: 16px;
+            resize: vertical;
         }
-        textarea { resize: vertical; }
-        textarea::placeholder { color: #9ca3af; }
         textarea:focus { border-color: #3182ce; outline: none; }
-        .btn-container { text-align: center; margin-bottom: 20px; }
-        button {
-            width: 80%;
-            padding: 14px;
-            font-size: 18px;
-            font-weight: bold;
-            color: white;
-            background-color: #3182ce;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        button:hover { background-color: #2b6cb0; }
-        .output-box {
+        /* 解析結果用のテキストエリアの背景色を設定 */
+        #output {
             background-color: #f8fafc;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            word-break: break-all;
-            color: #1a202c;
         }
-        .output-placeholder {
-            color: #9ca3af;
-        }
+        /* placeholderの文字色（グレー） */
+        textarea::placeholder { color: #9ca3af; }
+        /* JavaScript側でクラス操作をしなくても済むよう、CSS側でplaceholderの色を共通化 */
     </style>
 </head>
 <body>
@@ -69,25 +51,24 @@
         <textarea id="inputText" placeholder="ここに入力"></textarea>
     </div>
 
-    <!-- 2. 真ん中に解析ボタン -->
-    <div class="btn-container">
-        <button onclick="analyzeCrypto()">⚡ 暗号を解析・変換する</button>
+    <!-- 2. 真ん側に解析ボタン -->
+    <div class="btn-container" style="text-align: center; margin-bottom: 20px;">
+        <button onclick="analyzeCrypto()" style="width: 80%; padding: 14px; font-size: 18px; font-weight: bold; color: white; background-color: #3182ce; border: none; border-radius: 6px; cursor: pointer; transition: background-color 0.2s;">⚡ 暗号を解析・変換する</button>
     </div>
 
-    <!-- 3. 下に解析結果の欄 -->
+    <!-- 3. 下に解析結果の欄（文字編集可能なtextareaに変更） -->
     <div class="form-group">
         <label>解析結果:</label>
-        <div id="output" class="output-box output-placeholder">ここに結果が表示されます</div>
+        <textarea id="output" placeholder="ここに結果が表示されます"></textarea>
     </div>
 
     <script>
         const hiraSource = "あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん";
-        const hiraTarget = "んをわろれるりらよゆヤもめむみまほへふひはのねぬになとてつちたそせすしさこけくきかおえういあ";
+        const hiraTarget = "んをわろれるりらよゆやもめむみまほへふひはのねぬになとてつちたそせすしさこけくきかおえういあ";
 
         const kanaSource = "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン";
-        const kanaTarget = "ンヲワロレルリラヨユヤモメムミマホヘフヒハノネヌニナトテツチタソセスシサコケクキカオエウアイア";
+        const kanaTarget = "ンヲワロレルリラヨユヤモメムミマホヘフヒハノネヌニナトテツチタソセスシサコケクキカオエウイア";
 
-        // 特殊文字（濁点・半濁点・小文字）を清音に変換するマップ
         const specialToNormal = {
             'が':'か', 'ぎ':'き', 'ぐ':'く', 'げ':'け', 'ご':'こ',
             'ざ':'さ', 'じ':'し', 'ず':'す', 'ぜ':'せ', 'ぞ':'そ',
@@ -95,7 +76,7 @@
             'ば':'は', 'び':'ひ', 'ぶ':'ふ', 'べ':'へ', 'ぼ':'ほ',
             'ぱ':'は', 'ぴ':'ひ', 'ぷ':'ふ', 'ぺ':'へ', 'ぽ':'ほ',
             'ぁ':'あ', 'ぃ':'い', 'ぅ':'う', 'ぇ':'え', 'ぉ':'お',
-            'っ':'つ', 'ゃ':'や', 'ゅ':'ゆ', 'ょ':'よ', 'ゎ':'わ', // 【修正】'ょ':'や' から 'ょ':'よ' に変更
+            'っ':'つ', 'ゃ':'や', 'ゅ':'ゆ', 'ょ':'よ', 'ゎ':'わ',
             
             'ガ':'カ', 'ギ':'キ', 'グ':'ク', 'ゲ':'ケ', 'ゴ':'コ',
             'ザ':'サ', 'ジ':'シ', 'ズ':'ス', 'ゼ':'セ', 'ゾ':'ソ',
@@ -104,17 +85,16 @@
             'パ':'ハ', 'ピ':'ヒ', 'プ':'フ', 'ペ':'へ', 'ポ':'ホ',
             'ヴ':'ウ',
             'ァ':'ア', 'ィ':'イ', 'ゥ':'ウ', 'ェ':'エ', 'ォ':'オ',
-            'ッ':'ツ', 'ャ':'ヤ', 'ュ':'ユ', 'ョ':'ヨ', 'ヮ':'ワ'  // 【修正】'ョ':'ヤ' から 'ョ':'ヨ' に変更
+            'ッ':'ツ', 'ャ':'ヤ', 'ュ':'ユ', 'ョ':'ヨ', 'ヮ':'ワ'
         };
 
         function analyzeCrypto() {
             const input = document.getElementById('inputText').value;
             let result = '';
 
+            // 入力が空の場合は、解析結果の枠も空（placeholderを表示）にする
             if (input.trim() === '') {
-                const outputDiv = document.getElementById('output');
-                outputDiv.innerText = 'ここに結果が表示されます';
-                outputDiv.classList.add('output-placeholder');
+                document.getElementById('output').value = '';
                 return;
             }
 
@@ -140,9 +120,8 @@
                 result += char;
             }
 
-            const outputDiv = document.getElementById('output');
-            outputDiv.innerText = result;
-            outputDiv.classList.remove('output-placeholder');
+            // 編集可能なテキストエリアの値（value）として結果を出力
+            document.getElementById('output').value = result;
         }
     </script>
 
