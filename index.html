@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>暗号解析ツール</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            /* 横幅をウィンドウサイズに追従させ、左右に20pxのマージンを確保 */
+            width: calc(100% - 40px);
+            margin: 40px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            /* 極端に横幅が狭くなったときにつぶれないための最小幅 */
+            min-width: 280px;
+            box-sizing: border-box;
+        }
+        h1 { text-align: center; color: #2c3e50; font-size: 22px; margin-bottom: 20px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: #4a5568; }
+        textarea, .output-box {
+            width: 100%;
+            height: 120px;
+            padding: 12px;
+            border: 2px solid #cbd5e0;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        textarea { resize: vertical; }
+        textarea::placeholder { color: #9ca3af; }
+        textarea:focus { border-color: #3182ce; outline: none; }
+        .btn-container { text-align: center; margin-bottom: 20px; }
+        button {
+            width: 80%;
+            padding: 14px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            background-color: #3182ce;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        button:hover { background-color: #2b6cb0; }
+        .output-box {
+            background-color: #f8fafc;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+            color: #1a202c;
+        }
+        .output-placeholder {
+            color: #9ca3af;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🔍 暗号解析ツール</h1>
+
+    <!-- 1. 上に入力欄 -->
+    <div class="form-group">
+        <label for="inputText">テキストを入力してください（ひらがな・カタカナ対応）:</label>
+        <textarea id="inputText" placeholder="ここに入力"></textarea>
+    </div>
+
+    <!-- 2. 真ん側に解析ボタン -->
+    <div class="btn-container">
+        <button onclick="analyzeCrypto()">⚡ 暗号を解析・変換する</button>
+    </div>
+
+    <!-- 3. 下に解析結果の欄 -->
+    <div class="form-group">
+        <label>解析結果:</label>
+        <div id="output" class="output-box output-placeholder">ここに結果が表示されます</div>
+    </div>
+
+    <script>
+        const hiraSource = "あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん";
+        const hiraTarget = "んをわろれるりらよゆやもめむみまほへふひはのねぬになとてつちたそせすしさこけくきかおえういあ";
+
+        const kanaSource = "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン";
+        const kanaTarget = "ンヲワロレルリラヨユヤモメムミマホヘフヒハノネヌニナトテツチタソセスシサコケクキカオエウアイア";
+
+        function analyzeCrypto() {
+            const input = document.getElementById('inputText').value;
+            let result = '';
+
+            if (input.trim() === '') {
+                const outputDiv = document.getElementById('output');
+                outputDiv.innerText = 'ここに結果が表示されます';
+                outputDiv.classList.add('output-placeholder');
+                return;
+            }
+
+            for (let i = 0; i < input.length; i++) {
+                const char = input[i];
+
+                const hiraIndex = hiraSource.indexOf(char);
+                if (hiraIndex !== -1) {
+                    result += hiraTarget[hiraIndex];
+                    continue;
+                }
+
+                const kanaIndex = kanaSource.indexOf(char);
+                if (kanaIndex !== -1) {
+                    result += kanaTarget[kanaIndex];
+                    continue;
+                }
+
+                result += char;
+            }
+
+            const outputDiv = document.getElementById('output');
+            outputDiv.innerText = result;
+            outputDiv.classList.remove('output-placeholder');
+        }
+    </script>
+
+</body>
+</html>
