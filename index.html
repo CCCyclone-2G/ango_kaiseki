@@ -9,14 +9,12 @@
             font-family: 'Helvetica Neue', Arial, sans-serif;
             background-color: #f4f7f6;
             color: #333;
-            /* 横幅をウィンドウサイズに追従させ、左右に20pxのマージンを確保 */
             width: calc(100% - 40px);
             margin: 40px auto;
             padding: 20px;
             background: white;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-            /* 極端に横幅が狭くなったときにつぶれないための最小幅 */
             min-width: 280px;
             box-sizing: border-box;
         }
@@ -71,7 +69,7 @@
         <textarea id="inputText" placeholder="ここに入力"></textarea>
     </div>
 
-    <!-- 2. 真ん側に解析ボタン -->
+    <!-- 2. 真ん中に解析ボタン -->
     <div class="btn-container">
         <button onclick="analyzeCrypto()">⚡ 暗号を解析・変換する</button>
     </div>
@@ -84,10 +82,30 @@
 
     <script>
         const hiraSource = "あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん";
-        const hiraTarget = "んをわろれるりらよゆやもめむみまほへふひはのねぬになとてつちたそせすしさこけくきかおえういあ";
+        const hiraTarget = "んをわろれるりらよゆヤもめむみまほへふひはのねぬになとてつちたそせすしさこけくきかおえういあ";
 
         const kanaSource = "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン";
         const kanaTarget = "ンヲワロレルリラヨユヤモメムミマホヘフヒハノネヌニナトテツチタソセスシサコケクキカオエウアイア";
+
+        // 特殊文字（濁点・半濁点・小文字）を清音に変換するマップ
+        const specialToNormal = {
+            'が':'か', 'ぎ':'き', 'ぐ':'く', 'げ':'け', 'ご':'こ',
+            'ざ':'さ', 'じ':'し', 'ず':'す', 'ぜ':'せ', 'ぞ':'そ',
+            'だ':'た', 'ぢ':'ち', 'づ':'つ', 'で':'て', 'ど':'と',
+            'ば':'は', 'び':'ひ', 'ぶ':'ふ', 'べ':'へ', 'ぼ':'ほ',
+            'ぱ':'は', 'ぴ':'ひ', 'ぷ':'ふ', 'ぺ':'へ', 'ぽ':'ほ',
+            'ぁ':'あ', 'ぃ':'い', 'ぅ':'う', 'ぇ':'え', 'ぉ':'お',
+            'っ':'つ', 'ゃ':'や', 'ゅ':'ゆ', 'ょ':'よ', 'ゎ':'わ', // 【修正】'ょ':'や' から 'ょ':'よ' に変更
+            
+            'ガ':'カ', 'ギ':'キ', 'グ':'ク', 'ゲ':'ケ', 'ゴ':'コ',
+            'ザ':'サ', 'ジ':'シ', 'ズ':'ス', 'ゼ':'セ', 'ゾ':'ソ',
+            'ダ':'タ', 'ヂ':'チ', 'ヅ':'ツ', 'デ':'テ', 'ド':'ト',
+            'バ':'ハ', 'ビ':'ヒ', 'ブ':'フ', 'ベ':'へ', 'ボ':'ホ',
+            'パ':'ハ', 'ピ':'ヒ', 'プ':'フ', 'ペ':'へ', 'ポ':'ホ',
+            'ヴ':'ウ',
+            'ァ':'ア', 'ィ':'イ', 'ゥ':'ウ', 'ェ':'エ', 'ォ':'オ',
+            'ッ':'ツ', 'ャ':'ヤ', 'ュ':'ユ', 'ョ':'ヨ', 'ヮ':'ワ'  // 【修正】'ョ':'ヤ' から 'ョ':'ヨ' に変更
+        };
 
         function analyzeCrypto() {
             const input = document.getElementById('inputText').value;
@@ -101,7 +119,11 @@
             }
 
             for (let i = 0; i < input.length; i++) {
-                const char = input[i];
+                let char = input[i];
+
+                if (specialToNormal[char]) {
+                    char = specialToNormal[char];
+                }
 
                 const hiraIndex = hiraSource.indexOf(char);
                 if (hiraIndex !== -1) {
